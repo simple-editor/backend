@@ -46,10 +46,13 @@ public class UserService {
             // 로그인 성공, 쿠키 설정
             Cookie userNumCookie = new Cookie("userNum", String.valueOf(userEntity.getUserNum()));
             Cookie userIdCookie = new Cookie("userId", userEntity.getUserId());
+            Cookie userPasswordCookie = new Cookie("userPassword", userEntity.getUserPassword());
             userNumCookie.setPath("/");
             userIdCookie.setPath("/");
+            userPasswordCookie.setPath("/");
             response.addCookie(userNumCookie);
             response.addCookie(userIdCookie);
+            response.addCookie(userPasswordCookie);
         }
     }
     

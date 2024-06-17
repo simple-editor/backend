@@ -11,6 +11,7 @@ import org.json.simple.JSONObject;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -28,11 +29,11 @@ public class UserJsonEntity {
 
 	@Id
 	@Column(name = "json_id")
+	@GeneratedValue
 	private Long jsonId;
-	private Long userNum;
 	
-//	@Column(columnDefinition = "JSON", name = "json_file")
-//	private JSONObject jsonFile;
+	@Column(name = "user_num")
+	private Long userNum;
 	
 	@Type(JsonType.class)
 	@Column(columnDefinition = "JSON", name = "json_file")
