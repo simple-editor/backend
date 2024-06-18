@@ -3,6 +3,7 @@ package com.example.demo.userlibrary;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 
@@ -26,6 +27,6 @@ public class UserJsonDTO {
 	private String userId;
 	private String userPassword;
 	private String userPasswordConfirm;
-	private JSONObject userLib;
+	private JSONArray userLib;
 	private int newFileNum;
 }

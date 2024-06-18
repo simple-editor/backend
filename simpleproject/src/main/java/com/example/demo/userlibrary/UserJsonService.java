@@ -2,6 +2,7 @@ package com.example.demo.userlibrary;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.json.simple.JSONArray;
@@ -32,24 +33,29 @@ public class UserJsonService {
 		 return UserJsonConverter.entitiesToDTOs(userJsonEntities);
 	 }
 	 
-	 public Integer CountLib(JSONObject jsonObject) {
-			JSONArray jsonArray = (JSONArray) jsonObject.get("fileNum");
+	 public Integer CountLib(Map<String, Object> map) {
+		ArrayList<Object> fileNums = new ArrayList<>();	
+		 fileNums.add(map.get("fileNum"));
 			
 			ArrayList<Integer> numlist = new ArrayList<>();
-			for (Object arr : jsonArray) {
-				JSONObject jobject = (JSONObject) arr;
-				numlist.add((Integer)jobject.get("fileNum"));
+			if (fileNums.isEmpty()) {
+				Integer numcount = numlist.size();
+				return numcount;
+			}
+			else {
+			for (Object arr : fileNums) {
+				numlist.add((Integer) arr);
 			}
 			Integer numcount = numlist.size();
 			return numcount;
 		}
-		
+	 }
 	public JSONObject JavaToJson(Long userNum, UserJsonDTO userJsonDTO) {
 		List<UserJsonDTO> userJsonDTOs = userJsonList(userNum);
 		Integer numcount = 0;
 		
 		if (!userJsonDTOs.isEmpty()) {
-	        numcount = CountLib(userJsonDTO.getUserLib());
+	        numcount = CountLib(userJsonDTO.getJsonFile());
 	    } else {
 	    	numcount = 0;
 //	        throw new UserNotFoundException("해당유저의 정보가 없습니다");
@@ -65,11 +71,8 @@ public class UserJsonService {
 		case 2:
 			filenum = 3;
 			break;
-		case 3:
-			filenum = userJsonDTO.getNewFileNum();
-			break;
 		}
-		JSONObject jsonfile = userJsonDTO.getUserLib();	
+		JSONArray jsonfile = userJsonDTO.getUserLib();	
 		String jsonName = userJsonDTO.getJsonName();
 		
 		
@@ -88,7 +91,8 @@ public class UserJsonService {
 			jsonId = userJson.get(userJson.size()-1).getJsonId();
 		}
 		
-		jsonId +=1;
+		jsonId +=(long)1;
+		
 		return jsonId;
 	}
 	public String userJsonModify(UserJsonDTO userJsonDTO) {
@@ -102,7 +106,7 @@ public class UserJsonService {
 	int fileNum = userJsonDTO.getFileNum();
 	
 	
-		JSONObject jsonfile = userJsonDTO.getUserLib();	
+		JSONArray jsonfile = userJsonDTO.getUserLib();	
 		String jsonName = userJsonDTO.getJsonName();
 		
 		JSONObject makejson = new JSONObject();
