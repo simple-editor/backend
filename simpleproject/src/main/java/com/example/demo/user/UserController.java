@@ -35,14 +35,14 @@ public class UserController {
     @PostMapping("/signout")
     public String userSignout(HttpServletRequest request, HttpServletResponse response) {
         // 쿠키에서 userNum과 userId 가져오기
-        String userNum = null;
+        Long userNum = null;
         String userId = null;
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals("userNum")) {
-                    userNum = cookie.getValue();
-                } else if (cookie.getName().equals("userId")) {
+                    userNum = Long.parseLong(cookie.getValue());
+                }  if (cookie.getName().equals("userId")) {
                     userId = cookie.getValue();
                 }
             }
@@ -58,26 +58,53 @@ public class UserController {
 		
     // 회원 탈퇴
     @DeleteMapping("/delete")
-    public String userDelete(HttpServletRequest request, HttpServletResponse response) {
+    public String userDelete(@RequestBody UserDTO userDTO, HttpServletRequest request, HttpServletResponse response) {
         // 쿠키에서 userNum과 userId 가져오기
-        String userNum = null;
+        Long userNum = null;
         String userId = null;
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals("userNum")) {
-                    userNum = cookie.getValue();
-                } else if (cookie.getName().equals("userId")) {
+                    userNum = Long.parseLong(cookie.getValue());
+                }  if (cookie.getName().equals("userId")) {
                     userId = cookie.getValue();
                 }
             }
         }
-
+        String userPassword = userService.findPassword(userNum);
         if (userNum == null || userId == null) {
             return "쿠키에 사용자 정보가 없습니다.";
         } else {
             // 서비스 계층에 쿠키 값을 전달하고 처리 결과를 반환
-            return userService.userDelete(Integer.parseInt(userNum), userId, response);
+        	if (userPassword.equals(userDTO.getUserPasswordConfirm()))
+            return userService.userDelete(userNum, userId, response);
+        	else
+        		return "비밀번호가 일치하지 않습니다.";
+        }
+    }
+    @PostMapping("/modify")
+    public String userModify(@RequestBody UserDTO userDTO, HttpServletRequest request, HttpServletResponse response) {
+    	Long userNum = null;
+        String userId = null;
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("userNum")) {
+                    userNum = Long.parseLong(cookie.getValue());
+                }  if (cookie.getName().equals("userId")) {
+                    userId = cookie.getValue();
+                }
+            }
+        }
+String userPassword = userService.findPassword(userNum);
+        if (userNum == null || userId == null) {
+            return "쿠키에 사용자 정보가 없습니다.";
+        } else {
+            if (userDTO.getUserPasswordConfirm().equals(userPassword))
+            return userService.modifyUser(userDTO, userNum, userId, response);
+            else 
+            	return "기존 비밀번호가 일치하지 않습니다.";
         }
     }
 }

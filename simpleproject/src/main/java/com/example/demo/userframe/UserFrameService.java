@@ -13,7 +13,7 @@ public class UserFrameService {
 	UserFrameRepository userFrameRepository;
 
     // 사용자 개인 프레임 조회
-    public List<UserFrameDTO> userFrameList(int userNum, String userId) {
+    public List<UserFrameDTO> userFrameList(Long userNum, String userId) {
         List<UserFrameEntity> userFrameEntities = userFrameRepository.findByUserNumAndUserId(userNum, userId);
         return userFrameEntities.stream()
         		.map(UserFrameConverter::entityToDTO)
@@ -28,7 +28,7 @@ public class UserFrameService {
     }
 
     // 사용자 개인 프레임 삭제
-    public String userFrameDelete(Long frameId, int userNum, String userId) {
+    public String userFrameDelete(Long frameId, Long userNum, String userId) {
         UserFrameEntity userFrameEntity = userFrameRepository.findByFrameIdAndUserNumAndUserId(frameId, userNum, userId);
         if (userFrameEntity == null) {
             return "해당 프레임을 찾을 수 없습니다.";

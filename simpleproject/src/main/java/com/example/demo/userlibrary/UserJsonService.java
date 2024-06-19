@@ -1,9 +1,11 @@
 package com.example.demo.userlibrary;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -33,33 +35,9 @@ public class UserJsonService {
 		 return UserJsonConverter.entitiesToDTOs(userJsonEntities);
 	 }
 	 
-	 public Integer CountLib(Map<String, Object> map) {
-		ArrayList<Object> fileNums = new ArrayList<>();	
-		 fileNums.add(map.get("fileNum"));
-			
-			ArrayList<Integer> numlist = new ArrayList<>();
-			if (fileNums.isEmpty()) {
-				Integer numcount = numlist.size();
-				return numcount;
-			}
-			else {
-			for (Object arr : fileNums) {
-				numlist.add((Integer) arr);
-			}
-			Integer numcount = numlist.size();
-			return numcount;
-		}
-	 }
 	public JSONObject JavaToJson(Long userNum, UserJsonDTO userJsonDTO) {
 		List<UserJsonDTO> userJsonDTOs = userJsonList(userNum);
-		Integer numcount = 0;
-		
-		if (!userJsonDTOs.isEmpty()) {
-	        numcount = CountLib(userJsonDTO.getJsonFile());
-	    } else {
-	    	numcount = 0;
-//	        throw new UserNotFoundException("해당유저의 정보가 없습니다");
-	    }	
+		Integer numcount = userJsonDTOs.size();	
 		Integer filenum = 0;
 		switch(numcount) {
 		case 0:
@@ -84,38 +62,35 @@ public class UserJsonService {
 		
 		return makejson;
 		}
-	public Long makeJsonId() {
-		Long jsonId = (long)0;
-		List<UserJsonDTO> userJson = userJsonList();
-		if (!userJson.isEmpty()) {
-			jsonId = userJson.get(userJson.size()-1).getJsonId();
-		}
-		
-		jsonId +=(long)1;
-		
-		return jsonId;
-	}
+	
 	public String userJsonModify(UserJsonDTO userJsonDTO) {
 		UserJsonEntity userJsonEntity = UserJsonConverter.DtoTOEntity(userJsonDTO);
 		userJsonRepository.save(userJsonEntity);
 		return "라이브러리 수정 성공";
 	}
-	public JSONObject JavaToJsonModify(Long userNum, UserJsonDTO userJsonDTO) {
-		UserJsonEntity userJsonEntity = userJsonRepository.getByUserNum(userNum);
-		
-	int fileNum = userJsonDTO.getFileNum();
-	
+	public Map<String, Object> JavaToJsonModify(Long jsonId, UserJsonDTO userJsonDTO) {
+		Optional<UserJsonEntity> optional = userJsonRepository.findById(jsonId);
+		Map<String, Object> makejson = optional.get().getJsonFile();
 	
 		JSONArray jsonfile = userJsonDTO.getUserLib();	
 		String jsonName = userJsonDTO.getJsonName();
 		
-		JSONObject makejson = new JSONObject();
-		makejson.put("fileNum", fileNum);
-		makejson.put("userNum", userNum);
 		makejson.put("userLib", jsonfile);
 		makejson.put("jsonName", jsonName);
 		return makejson;
 		
+	}
+	
+	public Long findJsonId(UserJsonDTO userJsonDTO, Long userNum) {
+		List<UserJsonDTO> entities = userJsonList(userNum);
+		UserJsonDTO dto = new UserJsonDTO();
+		for (UserJsonDTO dto2 : entities) {
+			Map<String, Object> json = dto2.getJsonFile();
+			if ((int)json.get("fileNum") == userJsonDTO.getFileNum())
+				dto = dto2;
+		}
+		Long jsonId = dto.getJsonId();
+		return jsonId;
 	}
 	public List<UserJsonEntity> LookLib(Long userNum) {
 		return userJsonRepository.findByUserNum(userNum);

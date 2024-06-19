@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.exception.*;
-import com.example.demo.user.UserDTO;
+import com.example.demo.user.*;
 import com.example.demo.userframe.UserFrameDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -29,6 +29,8 @@ public class UserJsonController {
 	
 	@Autowired
 	UserJsonService userJsonService;
+	@Autowired
+	UserService userService;
 	
 	@PostMapping("/create")
     public String userLibCreate(@RequestBody UserJsonDTO userJsonDTO, HttpServletRequest request) {
@@ -36,7 +38,6 @@ public class UserJsonController {
     	// 쿠키에서 userNum과 userId 가져오기
         Long userNum = (long)0;
         String userId = null;
-        String userPassword = null;
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
@@ -46,14 +47,10 @@ public class UserJsonController {
                 if (cookie.getName().equals("userId")) {
                     userId = cookie.getValue();
                 }
-                 if (cookie.getName().equals("userPassword")) {
-                    userPassword = cookie.getValue();
-                }
+             
             }
         }
-
         userJsonDTO.setUserNum(userNum);
-        userJsonDTO.setJsonId(userJsonService.makeJsonId());
         JSONObject jsonObject = userJsonService.JavaToJson(userNum, userJsonDTO);
         if (jsonObject.isEmpty())
         	throw new UserNotFoundException("라이브러리의 정보가 없습니다");
@@ -67,7 +64,8 @@ public class UserJsonController {
 	public String userLibmodify(@RequestBody UserJsonDTO userJsonDTO, HttpServletRequest request) {
 		Long userNum = (long)0;
         String userId = null;
-        String userPassword = null;
+        
+       String userPassword = userService.findPassword(userNum);
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
@@ -77,22 +75,23 @@ public class UserJsonController {
                 if (cookie.getName().equals("userId")) {
                     userId = cookie.getValue();
                 }
-                 if (cookie.getName().equals("userPassword")) {
-                    userPassword = cookie.getValue();
-                }
+                
             }
         }
         if (!userPassword.equals(userJsonDTO.getUserPasswordConfirm()))
 		return "비밀번호가 일치하지 않습니다";
         else {
         	userJsonDTO.setUserNum(userNum);
-            userJsonDTO.setJsonId(userJsonDTO.getJsonId());
-            JSONObject jsonObject = userJsonService.JavaToJsonModify(userNum, userJsonDTO);
+            Long jsonId = userJsonService.findJsonId(userJsonDTO, userNum);
+        	userJsonDTO.setJsonId(jsonId);
+            Map<String, Object> jsonObject = userJsonService.JavaToJsonModify(jsonId, userJsonDTO);
+            userJsonDTO.setJsonFile(jsonObject);
 		return userJsonService.userJsonModify(userJsonDTO);
         }
 	}
+	
 @PostMapping("/look")
-public List<UserJsonDTO> userLibLook(@RequestBody UserJsonDTO userJsonDTO, HttpServletRequest request) {
+public List<UserJsonDTO> userLibLook(HttpServletRequest request) {
 	Long userNum = (long)0;
 	Cookie[] cookies = request.getCookies();
     if (cookies != null) {
@@ -111,19 +110,17 @@ public List<UserJsonDTO> userLibLook(@RequestBody UserJsonDTO userJsonDTO, HttpS
 		Long jsonId = userJsonDTO.getJsonId();
 		String userPasswordConfirm = userJsonDTO.getUserPasswordConfirm();
 
-        String userNum = null;
-        String userPassword = null;
+        Long userNum = null;
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals("userNum")) {
-                    userNum = cookie.getValue();
+                    userNum = Long.parseLong(cookie.getValue());
                 } 
-                else if (cookie.getName().equals("userNum")) {
-                	userPassword = cookie.getValue();
-                }
+                
             }
         }
+        String userPassword = userService.findPassword(userNum);
         
         if (userNum == null || jsonId == null) {
             throw new MissingUserInfoException("쿠키에 사용자 정보가 없습니다.");

@@ -21,7 +21,7 @@ public class UserFrameEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long frameId;
-	private int userNum;
+	private Long userNum;
 	private String userId;
 	private String frameName;
 	private int frameWidth;

@@ -10,9 +10,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserFrameDTO {
-	private int userNum;
+	private Long userNum;
 	private String userId;
 	private String frameName;
 	private int frameWidth;
 	private int frameHeight;
+	private String userPasswordConfirm;
+	private Long frameId;
 }

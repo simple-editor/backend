@@ -8,8 +8,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserFrameRepository extends JpaRepository<UserFrameEntity, Long> {
 
-	List<UserFrameEntity> findByUserNumAndUserId(int userNum, String userId);
+	List<UserFrameEntity> findByUserNumAndUserId(Long userNum, String userId);
 
-	UserFrameEntity findByFrameIdAndUserNumAndUserId(Long frameId, int userNum, String userId);
+	UserFrameEntity findByFrameIdAndUserNumAndUserId(Long frameId, Long userNum, String userId);
 
 }
