@@ -1,0 +1,13 @@
+gemini:
+  api:
+    url: ${GEMINI_URL}
+    key: ${GEMINI_KEY}
+    
+spring:
+  cloud:
+    gcp:
+      storage:
+        credentials:
+          location: classpath:credential-key.json
+        project-id: 964564145562-c0thh5ug92hev09ua4dkqe91fvgqo0s6.apps.googleusercontent.com
+        bucket: client_repuest_image
