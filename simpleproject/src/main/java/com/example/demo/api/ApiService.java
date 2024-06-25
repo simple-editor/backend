@@ -40,17 +40,17 @@ public class ApiService {
 	}
 	
 	public List<String> TakeURL(String reponse) throws IOException, ParseException {
-		String[] words = reponse.split(" ");
-		String word = "";
-		for (int i=0; i<words.length-1; i++) {
-			word += words[i];
-		}
-		word += words[words.length-1];
+//		String[] words = reponse.split(" ");
+//		String word = "";
+//		for (int i=0; i<words.length-1; i++) {
+//			word += words[i];
+//		}
+//		word += words[words.length-1];
 		String CseKey = "AIzaSyDCnDFGFNG-uIBjaf3GoozcCS741205JfM";
 		String CseId = "d5ecbd89615eb40d6";
 		List<String> urls = new ArrayList<>();
 		Response res = Jsoup.connect(
-				String.format("https://www.googleapis.com/customsearch/v1?key=%s&cx=%s&q=%s", CseKey, CseId, word))
+				String.format("https://www.googleapis.com/customsearch/v1?key=%s&cx=%s&q=%s", CseKey, CseId, reponse))
 				.ignoreContentType(true).execute();
 		Document doc = res.parse();
 		JSONParser par = new JSONParser();

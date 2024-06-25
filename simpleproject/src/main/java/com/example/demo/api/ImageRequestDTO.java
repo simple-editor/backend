@@ -14,4 +14,5 @@ import lombok.Setter;
 public class ImageRequestDTO {
 
 	private MultipartFile image;
+	private String tag;
 }
